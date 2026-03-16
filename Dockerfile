@@ -28,8 +28,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Environment variables
-ENV ASPNETCORE_URLS=http://+:8080
+# Standard .NET port
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "PropertyMap.API.dll"]

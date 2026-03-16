@@ -106,9 +106,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("ReactApp");
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseRouting();
-app.UseCors("ReactApp");
+
+// Health check endpoint for Render
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 if (!app.Environment.IsDevelopment())
 {
@@ -126,10 +129,20 @@ app.MapControllers();
 // Ensure database is created and seed demo user if empty (demo / demo123)
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.EnsureCreatedAsync();
-    var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
-    await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
+        await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+    }
 }
 
-app.Run();
+// Support Render/Heroku port binding
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}");
