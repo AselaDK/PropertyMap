@@ -15,9 +15,20 @@ namespace PropertyMap.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // Database: PostgreSQL only (dev and prod)
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            // Automatically convert postgresql:// URI to Npgsql format if needed
+            if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgresql://"))
+            {
+                var uri = new Uri(connectionString);
+                var userInfo = uri.UserInfo.Split(':');
+                var username = userInfo[0];
+                var password = userInfo.Length > 1 ? userInfo[1] : "";
+                connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password='{password}';";
+            }
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             // Configuration
             services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
