@@ -49,27 +49,13 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddApplication();      // Application layer (depends only on Core)
 builder.Services.AddInfrastructure(builder.Configuration); // Infrastructure layer (depends on Core & Application)
 
-// Configure CORS
+// Configure CORS from appsettings (Development = localhost, Production = Vercel only)
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:3000",
-                // "https://localhost:3000",
-                // "http://localhost:5173",
-                // "https://localhost:5173",
-                // "http://127.0.0.1:3000",
-                // "https://127.0.0.1:3000",
-                // "http://127.0.0.1:5173",
-                // "https://127.0.0.1:5173",
-                "https://property-map-viewer.vercel.app")
-                // Allow Swagger / same-host requests
-                // "https://localhost:7045",
-                // "http://localhost:7045",
-                // "http://localhost:5038",
-                // "https://localhost:5038"
-                //  )
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
