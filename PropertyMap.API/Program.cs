@@ -55,20 +55,21 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactApp", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:3000",
-                "https://localhost:3000",
-                "http://localhost:5173",
-                "https://localhost:5173",
-                "http://127.0.0.1:3000",
-                "https://127.0.0.1:3000",
-                "http://127.0.0.1:5173",
-                "https://127.0.0.1:5173",
-                "https://property-map-viewer.vercel.app",
+                // "http://localhost:3000",
+                // "https://localhost:3000",
+                // "http://localhost:5173",
+                // "https://localhost:5173",
+                // "http://127.0.0.1:3000",
+                // "https://127.0.0.1:3000",
+                // "http://127.0.0.1:5173",
+                // "https://127.0.0.1:5173",
+                "https://property-map-viewer.vercel.app")
                 // Allow Swagger / same-host requests
-                "https://localhost:7045",
-                "http://localhost:7045",
-                "http://localhost:5038",
-                "https://localhost:5038")
+                // "https://localhost:7045",
+                // "http://localhost:7045",
+                // "http://localhost:5038",
+                // "https://localhost:5038"
+                //  )
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -129,17 +130,44 @@ app.MapControllers();
 // Ensure database is created and seed demo user if empty (demo / demo123)
 using (var scope = app.Services.CreateScope())
 {
-    try
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var retries = 5;
+
+    while (retries > 0)
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
-        await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
-    }
-    catch (Exception ex)
-    {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        try
+        {
+            logger.LogInformation("Attempting database initialization (retries left: {Retries})...", retries);
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var canConnect = await dbContext.Database.CanConnectAsync();
+
+            if (!canConnect)
+            {
+                logger.LogWarning("Cannot connect to database. Retrying in 5 seconds...");
+                await Task.Delay(5000);
+                retries--;
+                continue;
+            }
+
+            logger.LogInformation("Database connection successful. Running EnsureCreated...");
+            await dbContext.Database.EnsureCreatedAsync();
+
+            logger.LogInformation("EnsureCreated complete. Running seeder...");
+            var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
+            await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
+
+            logger.LogInformation("Database initialized and seeded successfully.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            retries--;
+            logger.LogError(ex, "Database initialization failed. Retries left: {Retries}. Error: {Message}", retries, ex.Message);
+            if (retries == 0)
+                logger.LogCritical("All database initialization retries exhausted. App will run without a seeded database.");
+            else
+                await Task.Delay(5000);
+        }
     }
 }
 

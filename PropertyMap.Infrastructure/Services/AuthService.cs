@@ -34,9 +34,6 @@ namespace PropertyMap.Infrastructure.Services
             if (!user.IsActive)
                 return (false, null, null, null, "Account is deactivated");
 
-            // if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
-            //     return (false, null, null, null, "Account is locked. Try again later.");
-
             if (!_passwordHasher.VerifyPassword(password, user.PasswordHash, user.Salt))
             {
                 await _userRepository.UpdateLoginAttemptsAsync(user.Id, false);
