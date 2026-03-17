@@ -149,10 +149,25 @@ using (var scope = app.Services.CreateScope())
                 continue;
             }
 
-            logger.LogInformation("Database connection successful. Running EnsureCreated...");
-            await dbContext.Database.EnsureCreatedAsync();
+            // Check if OUR tables exist specifically.
+            // EnsureCreatedAsync is unreliable on Supabase because it sees Supabase's
+            // own internal tables and skips creation thinking the DB is already set up.
+            var usersTableExists = await dbContext.Database.ExecuteSqlRawAsync(
+                "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'Users'") > 0;
 
-            logger.LogInformation("EnsureCreated complete. Running seeder...");
+            if (!usersTableExists)
+            {
+                logger.LogInformation("Tables not found. Generating schema from EF Core model...");
+                var script = dbContext.Database.GenerateCreateScript();
+                await dbContext.Database.ExecuteSqlRawAsync(script);
+                logger.LogInformation("Schema created successfully.");
+            }
+            else
+            {
+                logger.LogInformation("Tables already exist. Skipping schema creation.");
+            }
+
+            logger.LogInformation("Running seeder...");
             var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
             await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
 
