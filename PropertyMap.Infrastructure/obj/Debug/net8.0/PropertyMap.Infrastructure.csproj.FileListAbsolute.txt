@@ -15,3 +15,4 @@ D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Infrastructur
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Infrastructure\obj\Debug\net8.0\PropertyMap.Infrastructure.pdb
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Infrastructure\obj\Debug\net8.0\ref\PropertyMap.Infrastructure.dll
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Infrastructure\obj\Debug\net8.0\PropertyMap.Infrastructure.csproj.CopyComplete
+D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Infrastructure\obj\Debug\net8.0\PropertyMap.Infrastructure.sourcelink.json

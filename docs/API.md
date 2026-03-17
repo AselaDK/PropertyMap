@@ -1,56 +1,41 @@
 # API Reference
 
-The Property Map API follows standard REST practices. All requests and responses use `application/json`.
+REST API for Property Map. All requests and responses use `application/json`. For **running the backend locally**, see the [README](../README.md).
 
 ## Base URL
 - **Local:** `http://localhost:5038/api`
-- **Swagger UI:** `http://localhost:5038/swagger`
+- **Swagger UI (local):** `http://localhost:5038/swagger`
+- **Production:** Your Render (or other) host URL + `/api`
 
 ---
 
-## 🔐 Authentication (`/auth`)
+## Authentication (`/auth`)
 
 ### 1. Login
 *   **Method:** `POST /api/auth/login`
-*   **Request Body:**
-    ```json
-    { "username": "demo", "password": "demo123" }
-    ```
-*   **Response:** Returns a JWT Access Token in the JSON body and a Refresh Token in an HttpOnly cookie.
+*   **Request Body:** `{ "username": "demo", "password": "demo123" }`
+*   **Response:** JWT in body; Refresh Token in HttpOnly cookie.
 
 ### 2. Refresh Token
 *   **Method:** `POST /api/auth/refresh`
-*   **Request Body:**
-    ```json
-    { "token": "expired_access_token", "refreshToken": "refresh_token" }
-    ```
-*   **Response:** Returns a new Access Token.
+*   **Request Body:** `{ "token": "...", "refreshToken": "..." }`
 
 ### 3. Current User
 *   **Method:** `GET /api/auth/me`
-*   **Auth Required:** Yes (Bearer Token)
-*   **Response:** Returns the current logged-in user profile.
+*   **Auth:** Bearer token required.
 
 ---
 
-## 🗺️ Properties (`/properties`)
+## Properties (`/properties`)
 
-### 1. List All Properties
-*   **Method:** `GET /api/properties`
-*   **Auth Required:** No (Public)
-*   **Response:** Array of all active property listings.
+### List / Search (public)
+*   `GET /api/properties` — list all.
+*   `GET /api/properties/search` — query params: `city`, `minPrice`, `maxPrice`, `propertyType`, `minBedrooms`, `latitude`, `longitude`, `radiusInKm`.
 
-### 2. Search Properties
-*   **Method:** `GET /api/properties/search`
-*   **Query Params:** `city`, `minPrice`, `maxPrice`, `propertyType`, `minBedrooms`, `latitude`, `longitude`, `radiusInKm`.
-*   **Auth Required:** No (Public)
-*   **Response:** Filtered property list.
+### By id (public)
+*   `GET /api/properties/{id}`
 
-### 3. Create Property
-*   **Method:** `POST /api/properties`
-*   **Auth Required:** Yes (Role: **Admin**)
-*   **Request Body:** `CreatePropertyDto`.
-
-### 4. Delete Property
-*   **Method:** `DELETE /api/properties/{id}`
-*   **Auth Required:** Yes (Role: **Admin**)
+### Admin only
+*   `POST /api/properties` — create (body: `CreatePropertyDto`).
+*   `PUT /api/properties/{id}` — update.
+*   `DELETE /api/properties/{id}` — delete.

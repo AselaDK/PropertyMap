@@ -13,3 +13,4 @@ D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Application\o
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Application\obj\Debug\net8.0\PropertyMap.Application.pdb
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Application\obj\Debug\net8.0\ref\PropertyMap.Application.dll
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Application\obj\Debug\net8.0\PropertyMap.Application.csproj.CopyComplete
+D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Application\obj\Debug\net8.0\PropertyMap.Application.sourcelink.json

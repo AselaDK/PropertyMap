@@ -1,81 +1,56 @@
-# Property Map Viewer
+# Property Map — Backend
 
-A full-stack application for viewing and managing properties on an interactive map. Built with **.NET 8** and **React**.
-
-## 🏗️ Architecture
-
-### Backend (.NET 8) - Clean Architecture
-The backend follows the principles of **Clean Architecture** (Onion Architecture) to ensure separation of concerns, testability, and independence from external frameworks.
-
-*   **Core:** Contains domain entities (`Property`, `User`), interfaces, and business logic. No external dependencies.
-*   **Application:** Contains DTOs, mapping profiles (AutoMapper), service interfaces, and application-specific logic.
-*   **Infrastructure:** Implements the core interfaces. Handles data access (EF Core + PostgreSQL), security (JWT, Password Hashing), and external services.
-*   **API (Presentation):** The entry point of the application. Contains Controllers, Middlewares (Error Handling, Rate Limiting), and configuration.
-
-### Frontend (React + Vite)
-The frontend is a modern React application built for speed and developer experience.
-
-*   **Vite:** Fast build tool and development server.
-*   **Leaflet:** Interactive map library used to visualize properties.
-*   **Tailwind CSS:** Utility-first CSS framework for responsive design.
-*   **Axios:** Configured with interceptors for automatic JWT handling and token refresh.
+.NET 8 Web API for the Property Map app. Uses **Clean Architecture** and **PostgreSQL**.
 
 ---
 
-## 🚀 Features
+## Features
 
-*   **Interactive Map:** View properties with custom markers and popups.
-*   **Property Search:** Filter properties by city, price, type, and bedrooms.
-*   **Nearby Search:** Find properties within a specific radius of a location.
-*   **Authentication:** Secure login with JWT and refresh token mechanism (HttpOnly cookies).
-*   **Admin Dashboard:** Admins can Create, Update, and Delete properties.
-*   **Responsive UI:** Fully functional on mobile and desktop devices.
+- **Auth** — Login, refresh token, logout; JWT + HttpOnly refresh cookie.
+- **Properties** — List, get by id, search (filters + nearby by lat/lng/radius); Admin CRUD.
+- **Roles** — Public read for properties; Admin-only create/update/delete.
+- **Infrastructure** — EF Core + Npgsql; schema creation and seeding in Infrastructure (no EF in API layer).
 
 ---
 
-## 🛠️ Local Setup
+## Architecture (Clean Architecture)
+
+- **Core** — Entities (`Property`, `User`), repository/service interfaces. No dependencies.
+- **Application** — DTOs, AutoMapper profiles, app service interfaces (`IAuthenticationService`, `IPropertyManagementService`).
+- **Infrastructure** — DbContext, repositories, JWT/password hashing, app service implementations, **database initializer and seeding** (all EF/schema logic here).
+- **API** — Controllers, middleware (error handling, rate limiting), CORS, JWT config. No EF Core references.
+
+---
+
+## Run locally
 
 ### Prerequisites
-*   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-*   [Node.js (v20+)](https://nodejs.org/)
-*   [PostgreSQL](https://www.postgresql.org/) (Running locally or via Docker)
 
-### 1. Database Setup
-Ensure you have a PostgreSQL database running. You can use the following connection string format in your `appsettings.json`:
-`Host=localhost;Port=5432;Database=propertymap;Username=postgres;Password=your_password`
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [PostgreSQL](https://www.postgresql.org/)
 
-### 2. Backend Setup
-1.  Navigate to the backend directory: `cd PropertyMap/PropertyMap.API`
-2.  Update `appsettings.json` with your database credentials.
-3.  Run the application: `dotnet run`
-    *   The API will automatically create the database and seed it with demo users.
-    *   Default API URL: `http://localhost:5038/api`
+### Steps
 
-### 3. Frontend Setup
-1.  Navigate to the frontend directory: `cd property-map-viewer`
-2.  Install dependencies: `npm install`
-3.  Create a `.env` file based on `.env.example`:
-    ```env
-    VITE_API_URL=http://localhost:5038/api
-    ```
-4.  Run the development server: `npm run dev`
-    *   Default URL: `http://localhost:3000`
+1. **Connection string**  
+   In `PropertyMap.API/appsettings.json`, set:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Host=localhost;Port=5432;Database=propertymap;Username=postgres;Password=YOUR_PASSWORD"
+   }
+   ```
 
----
+2. **Run the API**
+   ```bash
+   cd PropertyMap.API
+   dotnet run
+   ```
 
-## 🐳 Running with Docker
-You can run the entire stack (Database, API, and Frontend) using Docker Compose:
+3. **Verify**
+   - API: http://localhost:5038  
+   - Swagger: http://localhost:5038/swagger  
+   - Tables are created and users seeded on first run (see `DatabaseInitializer` in Infrastructure).
 
-```bash
-docker-compose up --build
-```
-*   Frontend: `http://localhost:3000`
-*   Backend API: `http://localhost:5038/api`
-*   PostgreSQL: `localhost:5432`
-
----
-
-## 🔐 Credentials (Seeded)
+### Seeded users
 
 | Role  | Username | Password |
 |-------|----------|----------|
@@ -84,6 +59,16 @@ docker-compose up --build
 
 ---
 
-## 📡 API Documentation
-Once the backend is running, you can explore the API using Swagger:
-`http://localhost:5038/swagger`
+## Project layout
+
+```text
+PropertyMap/
+├── PropertyMap.Core/           # Entities, interfaces
+├── PropertyMap.Application/   # DTOs, mappings, service interfaces
+├── PropertyMap.Infrastructure/# DbContext, repos, auth, DatabaseInitializer, seeding
+├── PropertyMap.API/            # Controllers, middleware, Program.cs
+├── PropertyMap.sln
+└── Dockerfile
+```
+
+More: [ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/API.md](docs/API.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
