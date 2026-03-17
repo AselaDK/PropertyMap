@@ -11,6 +11,20 @@ namespace PropertyMap.Infrastructure.Data
                 return;
 
             var hash = passwordHasher.HashPassword("demo123", out string salt);
+            
+            // Seed Admin User
+            dbContext.Users.Add(new User
+            {
+                Username = "admin",
+                Email = "admin@example.com",
+                PasswordHash = hash,
+                Salt = salt,
+                Role = "Admin",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            });
+
+            // Seed Regular User
             dbContext.Users.Add(new User
             {
                 Username = "demo",

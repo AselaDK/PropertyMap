@@ -1,219 +1,89 @@
-﻿property-map-viewer/
-├── .github/
-│   └── workflows/
-│       ├── backend-ci.yml
-│       └── frontend-ci.yml
-│
-├── backend/
-│   ├── PropertyMap.Core/                      # DOMAIN LAYER (No Dependencies)
-│   │   ├── Entities/
-│   │   │   ├── BaseEntity.cs
-│   │   │   ├── Property.cs
-│   │   │   └── User.cs
-│   │   ├── Enums/
-│   │   │   ├── PropertyType.cs
-│   │   │   └── UserRole.cs
-│   │   ├── Interfaces/
-│   │   │   ├── Repositories/
-│   │   │   │   ├── IGenericRepository.cs
-│   │   │   │   ├── IPropertyRepository.cs
-│   │   │   │   └── IUserRepository.cs
-│   │   │   └── Services/
-│   │   │       ├── IAuthService.cs
-│   │   │       └── IPropertyService.cs
-│   │   ├── Specifications/
-│   │   │   ├── ISpecification.cs
-│   │   │   ├── BaseSpecification.cs
-│   │   │   └── PropertySpecifications.cs
-│   │   └── PropertyMap.Core.csproj
-│   │
-│   ├── PropertyMap.Application/                # APPLICATION LAYER (Depends only on Core)
-│   │   ├── DTOs/
-│   │   │   ├── Auth/
-│   │   │   │   ├── LoginDto.cs
-│   │   │   │   ├── LoginResponseDto.cs
-│   │   │   │   └── UserDto.cs
-│   │   │   ├── Properties/
-│   │   │   │   ├── PropertyDto.cs
-│   │   │   │   ├── CreatePropertyDto.cs
-│   │   │   │   └── PropertyFilterDto.cs
-│   │   │   └── Shared/
-│   │   │       ├── ApiResponse.cs
-│   │   │       └── PagedResponse.cs
-│   │   ├── Interfaces/
-│   │   │   ├── IAuthenticationService.cs       # Application-level service interfaces
-│   │   │   └── IPropertyManagementService.cs
-│   │   ├── Mappings/
-│   │   │   └── AutoMapperProfile.cs
-│   │   ├── Validators/
-│   │   │   ├── CreatePropertyValidator.cs
-│   │   │   └── LoginValidator.cs
-│   │   ├── Features/
-│   │   │   ├── Auth/
-│   │   │   │   ├── Commands/
-│   │   │   │   │   └── LoginCommand.cs
-│   │   │   │   └── Queries/
-│   │   │   │       └── GetCurrentUserQuery.cs
-│   │   │   └── Properties/
-│   │   │       ├── Commands/
-│   │   │       │   └── CreatePropertyCommand.cs
-│   │   │       └── Queries/
-│   │   │           ├── GetAllPropertiesQuery.cs
-│   │   │           ├── GetPropertyByIdQuery.cs
-│   │   │           └── SearchPropertiesQuery.cs
-│   │   ├── DependencyInjection.cs
-│   │   └── PropertyMap.Application.csproj
-│   │
-│   ├── PropertyMap.Infrastructure/             # INFRASTRUCTURE LAYER (Depends on Core & Application)
-│   │   ├── Data/
-│   │   │   ├── ApplicationDbContext.cs
-│   │   │   ├── Configurations/
-│   │   │   │   ├── PropertyConfiguration.cs
-│   │   │   │   └── UserConfiguration.cs
-│   │   │   └── Migrations/
-│   │   ├── Repositories/                       # Implements Core.Interfaces.Repositories
-│   │   │   ├── GenericRepository.cs
-│   │   │   ├── PropertyRepository.cs
-│   │   │   └── UserRepository.cs
-│   │   ├── Security/
-│   │   │   ├── JwtSettings.cs
-│   │   │   ├── IJwtGenerator.cs
-│   │   │   ├── JwtGenerator.cs
-│   │   │   ├── IPasswordHasher.cs
-│   │   │   └── PasswordHasher.cs
-│   │   ├── Services/                            # Implements Application.Interfaces
-│   │   │   ├── AuthenticationService.cs         # Implements IAuthenticationService
-│   │   │   └── PropertyManagementService.cs     # Implements IPropertyManagementService
-│   │   ├── DependencyInjection.cs
-│   │   └── PropertyMap.Infrastructure.csproj
-│   │
-│   ├── PropertyMap.API/                         # PRESENTATION LAYER (Depends on Application & Infrastructure)
-│   │   ├── Controllers/
-│   │   │   ├── AuthController.cs
-│   │   │   └── PropertiesController.cs
-│   │   ├── Middleware/
-│   │   │   ├── ErrorHandlingMiddleware.cs
-│   │   │   └── JwtMiddleware.cs
-│   │   ├── Extensions/
-│   │   │   └── ClaimsPrincipalExtensions.cs
-│   │   ├── appsettings.json
-│   │   ├── Program.cs
-│   │   ├── PropertyMap.API.csproj
-│   │   └── Dockerfile
-│   │
-│   ├── PropertyMap.sln
-│   └── docker-compose.yml
-│
-├── frontend/
-│   ├── public/
-│   │   ├── index.html
-│   │   ├── favicon.ico
-│   │   └── manifest.json
-│   │
-│   ├── src/
-│   │   ├── assets/
-│   │   │   ├── images/
-│   │   │   ├── icons/
-│   │   │   └── styles/
-│   │   │       └── tailwind.css
-│   │   │
-│   │   ├── components/
-│   │   │   ├── common/
-│   │   │   │   ├── Button.tsx
-│   │   │   │   ├── Input.tsx
-│   │   │   │   ├── Modal.tsx
-│   │   │   │   ├── Spinner.tsx
-│   │   │   │   └── ErrorBoundary.tsx
-│   │   │   │
-│   │   │   ├── layout/
-│   │   │   │   ├── Header.tsx
-│   │   │   │   ├── Footer.tsx
-│   │   │   │   └── Sidebar.tsx
-│   │   │   │
-│   │   │   ├── map/
-│   │   │   │   ├── MapView.tsx
-│   │   │   │   ├── MapMarker.tsx
-│   │   │   │   ├── MapControls.tsx
-│   │   │   │   └── PropertyPopup.tsx
-│   │   │   │
-│   │   │   ├── properties/
-│   │   │   │   ├── PropertyCard.tsx
-│   │   │   │   ├── PropertyList.tsx
-│   │   │   │   ├── PropertyDetails.tsx
-│   │   │   │   └── PropertyFilters.tsx
-│   │   │   │
-│   │   │   ├── auth/
-│   │   │   │   ├── LoginForm.tsx
-│   │   │   │   ├── ProtectedRoute.tsx
-│   │   │   │   └── AuthContext.tsx
-│   │   │   │
-│   │   │   └── ui/
-│   │   │       ├── Alert.tsx
-│   │   │       ├── Badge.tsx
-│   │   │       └── Card.tsx
-│   │   │
-│   │   ├── pages/
-│   │   │   ├── Login.tsx
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── PropertyDetail.tsx
-│   │   │   └── NotFound.tsx
-│   │   │
-│   │   ├── services/
-│   │   │   ├── api/
-│   │   │   │   ├── axiosConfig.ts
-│   │   │   │   ├── authApi.ts
-│   │   │   │   └── propertyApi.ts
-│   │   │   ├── auth.service.ts
-│   │   │   └── property.service.ts
-│   │   │
-│   │   ├── hooks/
-│   │   │   ├── useAuth.ts
-│   │   │   ├── useProperties.ts
-│   │   │   └── useMap.ts
-│   │   │
-│   │   ├── store/
-│   │   │   ├── authSlice.ts
-│   │   │   ├── propertySlice.ts
-│   │   │   └── index.ts
-│   │   │
-│   │   ├── types/
-│   │   │   ├── property.ts
-│   │   │   ├── user.ts
-│   │   │   └── api.ts
-│   │   │
-│   │   ├── utils/
-│   │   │   ├── constants.ts
-│   │   │   ├── formatters.ts
-│   │   │   └── validators.ts
-│   │   │
-│   │   ├── config/
-│   │   │   └── environment.ts
-│   │   │
-│   │   ├── App.tsx
-│   │   ├── index.tsx
-│   │   └── routes.tsx
-│   │
-│   ├── .env
-│   ├── .env.example
-│   ├── .eslintrc.js
-│   ├── .prettierrc
-│   ├── tailwind.config.js
-│   ├── tsconfig.json
-│   ├── package.json
-│   └── Dockerfile
-│
-├── database/
-│   ├── init.sql
-│   ├── seed.sql
-│   └── Dockerfile
-│
-├── docs/
-│   ├── API.md
-│   ├── DEPLOYMENT.md
-│   └── ARCHITECTURE.md
-│
-├── .gitignore
-├── .dockerignore
-├── docker-compose.yml
-├── docker-compose.prod.yml
-└── README.md
+# Property Map Viewer
+
+A full-stack application for viewing and managing properties on an interactive map. Built with **.NET 8** and **React**.
+
+## 🏗️ Architecture
+
+### Backend (.NET 8) - Clean Architecture
+The backend follows the principles of **Clean Architecture** (Onion Architecture) to ensure separation of concerns, testability, and independence from external frameworks.
+
+*   **Core:** Contains domain entities (`Property`, `User`), interfaces, and business logic. No external dependencies.
+*   **Application:** Contains DTOs, mapping profiles (AutoMapper), service interfaces, and application-specific logic.
+*   **Infrastructure:** Implements the core interfaces. Handles data access (EF Core + PostgreSQL), security (JWT, Password Hashing), and external services.
+*   **API (Presentation):** The entry point of the application. Contains Controllers, Middlewares (Error Handling, Rate Limiting), and configuration.
+
+### Frontend (React + Vite)
+The frontend is a modern React application built for speed and developer experience.
+
+*   **Vite:** Fast build tool and development server.
+*   **Leaflet:** Interactive map library used to visualize properties.
+*   **Tailwind CSS:** Utility-first CSS framework for responsive design.
+*   **Axios:** Configured with interceptors for automatic JWT handling and token refresh.
+
+---
+
+## 🚀 Features
+
+*   **Interactive Map:** View properties with custom markers and popups.
+*   **Property Search:** Filter properties by city, price, type, and bedrooms.
+*   **Nearby Search:** Find properties within a specific radius of a location.
+*   **Authentication:** Secure login with JWT and refresh token mechanism (HttpOnly cookies).
+*   **Admin Dashboard:** Admins can Create, Update, and Delete properties.
+*   **Responsive UI:** Fully functional on mobile and desktop devices.
+
+---
+
+## 🛠️ Local Setup
+
+### Prerequisites
+*   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+*   [Node.js (v20+)](https://nodejs.org/)
+*   [PostgreSQL](https://www.postgresql.org/) (Running locally or via Docker)
+
+### 1. Database Setup
+Ensure you have a PostgreSQL database running. You can use the following connection string format in your `appsettings.json`:
+`Host=localhost;Port=5432;Database=propertymap;Username=postgres;Password=your_password`
+
+### 2. Backend Setup
+1.  Navigate to the backend directory: `cd PropertyMap/PropertyMap.API`
+2.  Update `appsettings.json` with your database credentials.
+3.  Run the application: `dotnet run`
+    *   The API will automatically create the database and seed it with demo users.
+    *   Default API URL: `http://localhost:5038/api`
+
+### 3. Frontend Setup
+1.  Navigate to the frontend directory: `cd property-map-viewer`
+2.  Install dependencies: `npm install`
+3.  Create a `.env` file based on `.env.example`:
+    ```env
+    VITE_API_URL=http://localhost:5038/api
+    ```
+4.  Run the development server: `npm run dev`
+    *   Default URL: `http://localhost:3000`
+
+---
+
+## 🐳 Running with Docker
+You can run the entire stack (Database, API, and Frontend) using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+*   Frontend: `http://localhost:3000`
+*   Backend API: `http://localhost:5038/api`
+*   PostgreSQL: `localhost:5432`
+
+---
+
+## 🔐 Credentials (Seeded)
+
+| Role  | Username | Password |
+|-------|----------|----------|
+| Admin | admin    | demo123  |
+| User  | demo     | demo123  |
+
+---
+
+## 📡 API Documentation
+Once the backend is running, you can explore the API using Swagger:
+`http://localhost:5038/swagger`
