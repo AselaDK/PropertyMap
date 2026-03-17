@@ -21,7 +21,9 @@ namespace PropertyMap.Infrastructure.Repositories
             decimal? maxPrice = null,
             int? minBedrooms = null,
             string? city = null,
-            string? state = null)
+            string? state = null,
+            int pageNumber = 1,
+            int pageSize = 5)
         {
             var query = _dbSet.AsQueryable();
 
@@ -45,6 +47,8 @@ namespace PropertyMap.Infrastructure.Repositories
 
             return await query
                 .OrderByDescending(p => p.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

@@ -1,10 +1,10 @@
-﻿using PropertyMap.Core.Entities;
+using PropertyMap.Core.Entities;
 
 namespace PropertyMap.Core.Interfaces.Services
 {
     public interface IPropertyService
     {
-        Task<IEnumerable<Property>> GetAllPropertiesAsync();
+        Task<IEnumerable<Property>> GetAllPropertiesAsync(int pageNumber = 1, int pageSize = 5);
         Task<Property?> GetPropertyByIdAsync(int id);
         Task<IEnumerable<Property>> SearchPropertiesAsync(
             string? propertyType = null,
@@ -12,7 +12,9 @@ namespace PropertyMap.Core.Interfaces.Services
             decimal? maxPrice = null,
             int? minBedrooms = null,
             string? city = null,
-            string? state = null);
+            string? state = null,
+            int pageNumber = 1,
+            int pageSize = 5);
         Task<IEnumerable<Property>> GetNearbyPropertiesAsync(
             double latitude,
             double longitude,

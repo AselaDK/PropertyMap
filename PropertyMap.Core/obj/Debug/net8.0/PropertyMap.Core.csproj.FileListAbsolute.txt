@@ -5,6 +5,7 @@ D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debu
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.AssemblyInfoInputs.cache
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.AssemblyInfo.cs
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.csproj.CoreCompileInputs.cache
+D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.sourcelink.json
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.dll
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\refint\PropertyMap.Core.dll
 D:\My Projects\.NET Core React\PropertyMap\PropertyMap\PropertyMap.Core\obj\Debug\net8.0\PropertyMap.Core.pdb

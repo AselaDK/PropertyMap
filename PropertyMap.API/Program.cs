@@ -116,6 +116,14 @@ app.MapControllers();
 // Initialize database (Infrastructure layer handles all EF Core logic)
 await DatabaseInitializer.InitializeAsync(app.Services);
 
-// Support Render/Heroku port binding
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Run($"http://0.0.0.0:{port}");
+if (app.Environment.IsDevelopment())
+{
+    app.Run();
+}
+else
+{
+    //// Support Render/Heroku port binding
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Run($"http://0.0.0.0:{port}");
+}
+

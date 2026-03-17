@@ -13,9 +13,9 @@ namespace PropertyMap.Infrastructure.Services
             _propertyRepository = propertyRepository;
         }
 
-        public async Task<IEnumerable<Property>> GetAllPropertiesAsync()
+        public async Task<IEnumerable<Property>> GetAllPropertiesAsync(int pageNumber = 1, int pageSize = 5)
         {
-            return await _propertyRepository.GetAllAsync();
+            return await _propertyRepository.GetPagedAsync(pageNumber, pageSize);
         }
 
         public async Task<Property?> GetPropertyByIdAsync(int id)
@@ -29,9 +29,11 @@ namespace PropertyMap.Infrastructure.Services
             decimal? maxPrice = null,
             int? minBedrooms = null,
             string? city = null,
-            string? state = null)
+            string? state = null,
+            int pageNumber = 1,
+            int pageSize = 5)
         {
-            return await _propertyRepository.SearchAsync(propertyType, minPrice, maxPrice, minBedrooms, city, state);
+            return await _propertyRepository.SearchAsync(propertyType, minPrice, maxPrice, minBedrooms, city, state, pageNumber, pageSize);
         }
 
         public async Task<IEnumerable<Property>> GetNearbyPropertiesAsync(double latitude, double longitude, double radiusInKm)

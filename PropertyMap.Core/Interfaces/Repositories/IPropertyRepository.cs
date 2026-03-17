@@ -1,4 +1,4 @@
-﻿using PropertyMap.Core.Entities;
+using PropertyMap.Core.Entities;
 
 namespace PropertyMap.Core.Interfaces.Repositories
 {
@@ -10,7 +10,9 @@ namespace PropertyMap.Core.Interfaces.Repositories
             decimal? maxPrice = null,
             int? minBedrooms = null,
             string? city = null,
-            string? state = null);
+            string? state = null,
+            int pageNumber = 1,
+            int pageSize = 5);
 
         Task<IEnumerable<Property>> GetNearbyPropertiesAsync(
             double latitude,

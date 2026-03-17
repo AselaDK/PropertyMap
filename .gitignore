@@ -4,3 +4,4 @@
 
 /.vs/PropertyMap
 /PropertyMap.API/appsettings.json
+PropertyMap.API/bin/Debug/net8.0/appsettings.json

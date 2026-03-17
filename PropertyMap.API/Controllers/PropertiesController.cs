@@ -21,11 +21,11 @@ namespace PropertyMap.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<PropertyDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllProperties()
+        [ProducesResponseType(typeof(ApiResponse<PagedResponse<PropertyDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllProperties([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
         {
-            var properties = await _propertyManagementService.GetAllPropertiesAsync();
-            return Ok(ApiResponse<IEnumerable<PropertyDto>>.Ok(properties));
+            var result = await _propertyManagementService.GetAllPropertiesAsync(pageNumber, pageSize);
+            return Ok(ApiResponse<PagedResponse<PropertyDto>>.Ok(result));
         }
 
         [HttpGet("{id}")]
@@ -41,23 +41,26 @@ namespace PropertyMap.API.Controllers
 
         [HttpGet("search")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(ApiResponse<PagedResponse<PropertyDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchProperties([FromQuery] PropertyFilterDto filter)
         {
-            IEnumerable<PropertyDto> properties;
-
             if (filter.Latitude.HasValue && filter.Longitude.HasValue)
             {
-                properties = await _propertyManagementService.GetNearbyPropertiesAsync(
+                var properties = await _propertyManagementService.GetNearbyPropertiesAsync(
                     filter.Latitude.Value,
                     filter.Longitude.Value,
                     filter.RadiusInKm ?? 10);
+                
+                // Nearby search currently returns IEnumerable, we can wrap it or just keep it as is.
+                // For consistency with pagination task, let's just return it as a list for now
+                // or wrap it in a paged response with one page.
+                return Ok(ApiResponse<IEnumerable<PropertyDto>>.Ok(properties));
             }
             else
             {
-                properties = await _propertyManagementService.SearchPropertiesAsync(filter);
+                var result = await _propertyManagementService.SearchPropertiesAsync(filter);
+                return Ok(ApiResponse<PagedResponse<PropertyDto>>.Ok(result));
             }
-
-            return Ok(ApiResponse<IEnumerable<PropertyDto>>.Ok(properties));
         }
 
         [HttpPost]
