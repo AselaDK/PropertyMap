@@ -127,64 +127,8 @@ app.UseMiddleware<RateLimitingMiddleware>();
 
 app.MapControllers();
 
-// Ensure database is created and seed demo user if empty (demo / demo123)
-using (var scope = app.Services.CreateScope())
-{
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    var retries = 5;
-
-    while (retries > 0)
-    {
-        try
-        {
-            logger.LogInformation("Attempting database initialization (retries left: {Retries})...", retries);
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var canConnect = await dbContext.Database.CanConnectAsync();
-
-            if (!canConnect)
-            {
-                logger.LogWarning("Cannot connect to database. Retrying in 5 seconds...");
-                await Task.Delay(5000);
-                retries--;
-                continue;
-            }
-
-            // Check if OUR tables exist specifically.
-            // EnsureCreatedAsync is unreliable on Supabase because it sees Supabase's
-            // own internal tables and skips creation thinking the DB is already set up.
-            var usersTableExists = await dbContext.Database.ExecuteSqlRawAsync(
-                "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'Users'") > 0;
-
-            if (!usersTableExists)
-            {
-                logger.LogInformation("Tables not found. Generating schema from EF Core model...");
-                var script = dbContext.Database.GenerateCreateScript();
-                await dbContext.Database.ExecuteSqlRawAsync(script);
-                logger.LogInformation("Schema created successfully.");
-            }
-            else
-            {
-                logger.LogInformation("Tables already exist. Skipping schema creation.");
-            }
-
-            logger.LogInformation("Running seeder...");
-            var passwordHasher = scope.ServiceProvider.GetRequiredService<PropertyMap.Infrastructure.Security.IPasswordHasher>();
-            await DatabaseSeeder.SeedAsync(dbContext, passwordHasher);
-
-            logger.LogInformation("Database initialized and seeded successfully.");
-            break;
-        }
-        catch (Exception ex)
-        {
-            retries--;
-            logger.LogError(ex, "Database initialization failed. Retries left: {Retries}. Error: {Message}", retries, ex.Message);
-            if (retries == 0)
-                logger.LogCritical("All database initialization retries exhausted. App will run without a seeded database.");
-            else
-                await Task.Delay(5000);
-        }
-    }
-}
+// Initialize database (Infrastructure layer handles all EF Core logic)
+await DatabaseInitializer.InitializeAsync(app.Services);
 
 // Support Render/Heroku port binding
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
